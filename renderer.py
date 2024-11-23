@@ -9,8 +9,9 @@ class Renderer:
         self.font1 = pygame.font.SysFont("comicsans", FONT1_SIZE)
         self.font2 = pygame.font.SysFont("comicsans", FONT2_SIZE)
 
-    def render_grid(self, original_grid):
+    def render_grid(self):
         size = self.game.field_type.value[0]
+        original_grid = self.game.field_start
 
         for row in range(size):
             for col in range(size):

@@ -10,21 +10,21 @@ def main():
     pygame.display.set_caption("Sudoku")
     screen.fill(WHITE)
 
-    game = Game(FieldType.f4x4)
-    renderer = Renderer(screen, game)
+    game = Game(FieldType.f9x9)
+    # renderer = Renderer(screen, game)
 
-    game.fill_random()
-
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
-        renderer.render_grid(original_grid=[[0]*9 for _ in range(9)])
-        pygame.display.update()
-
-    pygame.quit()
+    # game.fill_random()
+    game.display_field()
+    # running = True
+    # while running:
+    #     for event in pygame.event.get():
+    #         if event.type == pygame.QUIT:
+    #             running = False
+    #
+    #     renderer.render_grid()
+    #     pygame.display.update()
+    #
+    # pygame.quit()
 
 
 if __name__ == "__main__":
