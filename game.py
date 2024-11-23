@@ -2,7 +2,6 @@ from enum import Enum
 import random
 import copy
 
-
 class FieldType(Enum):
     f9x9 = {
         'size': 9,
@@ -14,7 +13,6 @@ class FieldType(Enum):
         'section_size': 2,
         'filled_range': range(4, 7)
     }
-
 
 class Game:
     def __init__(self, field_type=FieldType.f9x9):
@@ -157,48 +155,63 @@ class Game:
     def shuffle_grid(self):
         self.shuffle_rows_within_sections()
         self.shuffle_columns_within_sections()
-        self.shuffle_sections()
-        self.shuffle_columns()
-        self.shuffle_rows()
+        self.shuffle_row_sections()
+        self.shuffle_column_sections()
+        # Optionally transpose the grid for additional randomness
+        if random.choice([True, False]):
+            self.transpose_grid()
 
     def shuffle_rows_within_sections(self):
         for sec in range(self.section_size):
-            rows = list(range(sec * self.section_size, (sec + 1) * self.section_size))
+            # Identify the start and end indices of the current row section
+            start = sec * self.section_size
+            end = start + self.section_size
+            # Extract the rows within the current section
+            rows = self.field[start:end]
+            # Shuffle the rows
             random.shuffle(rows)
-            shuffled = [self.field[r] for r in rows]
-            self.field[sec * self.section_size:(sec + 1) * self.section_size] = shuffled
+            # Assign the shuffled rows back to the field
+            self.field[start:end] = rows
 
     def shuffle_columns_within_sections(self):
         for sec in range(self.section_size):
-            cols = list(range(sec * self.section_size, (sec + 1) * self.section_size))
+            # Identify the start and end indices of the current column section
+            start = sec * self.section_size
+            end = start + self.section_size
+            # Extract the columns within the current section
+            cols = list(range(start, end))
+            # Shuffle the column indices
+            random.shuffle(cols)
+            # Rearrange each row based on the shuffled column indices
             for row in self.field:
-                # Extract the values in the current section
-                section_values = [row[c] for c in cols]
+                shuffled_section = [row[c] for c in cols]
+                for idx, c in enumerate(range(start, end)):
+                    row[c] = shuffled_section[idx]
 
-                # Shuffle the section values
-                random.shuffle(section_values)
-
-                # Assign the shuffled values back to the respective columns
-                for c, val in zip(cols, section_values):
-                    row[c] = val
-
-    def shuffle_sections(self):
-        # Shuffle the order of the section rows
+    def shuffle_row_sections(self):
         sections = list(range(self.section_size))
         random.shuffle(sections)
-        self.field = [self.field[y * self.section_size:(y + 1) * self.section_size] for y in sections]
-        self.field = [item for sublist in self.field for item in sublist]
+        shuffled_field = []
+        for sec in sections:
+            start = sec * self.section_size
+            end = start + self.section_size
+            shuffled_field.extend(self.field[start:end])
+        self.field = shuffled_field
 
-    def shuffle_columns(self):
-        for _ in range(self.size):
-            y = random.randint(0, self.size - 1)
-            x1, x2 = random.sample(range(self.size), 2)
-            self.field[y][x1], self.field[y][x2] = self.field[y][x2], self.field[y][x1]
+    def shuffle_column_sections(self):
+        sections = list(range(self.section_size))
+        random.shuffle(sections)
+        for row in self.field:
+            shuffled_row = []
+            for sec in sections:
+                start = sec * self.section_size
+                end = start + self.section_size
+                shuffled_row.extend(row[start:end])
+            for i in range(self.size):
+                row[i] = shuffled_row[i]
 
-    def shuffle_rows(self):
-        for _ in range(self.size):
-            y1, y2 = random.sample(range(self.size), 2)
-            self.field[y1], self.field[y2] = self.field[y2], self.field[y1]
+    def transpose_grid(self):
+        self.field = [list(row) for row in zip(*self.field)]
 
     # Displaying the grid
     def display_field(self):
@@ -212,3 +225,10 @@ class Game:
             print(row)
             if (y + 1) % self.section_size == 0 and y < self.size - 1:
                 print("- " * (self.size + self.section_size))
+
+    def get_first_empty_cell(self):
+        for idx_y in range(0, self.size):
+            for idx_x in range(0, self.size):
+                if self.field[idx_y][idx_x] == 0:
+                    return idx_x, idx_y
+        return None
