@@ -2,6 +2,7 @@ from enum import Enum
 import random
 import copy
 
+
 class FieldType(Enum):
     f9x9 = {
         'size': 9,
@@ -14,6 +15,7 @@ class FieldType(Enum):
         'filled_range': range(4, 7)
     }
 
+
 class Game:
     def __init__(self, field_type=FieldType.f9x9):
         self.field_type = field_type.value
@@ -22,7 +24,7 @@ class Game:
         self.filled_range = self.field_type['filled_range']
         self.field = self._create_empty_field()
         self.fill_grid_backtracking()  # Fill the grid completely
-        self.shuffle_grid()  # Shuffle for randomness
+        # self.shuffle_grid()  # Shuffle for randomness
         self.remove_numbers_from_grid()  # Remove numbers to create the puzzle
         self.field_start = copy.deepcopy(self.field)
 
@@ -169,12 +171,19 @@ class Game:
     def shuffle_columns_within_sections(self):
         for sec in range(self.section_size):
             cols = list(range(sec * self.section_size, (sec + 1) * self.section_size))
-            random.shuffle(cols)
             for row in self.field:
-                shuffled_row = [row[c] for c in cols]
-                row[:] = shuffled_row
+                # Extract the values in the current section
+                section_values = [row[c] for c in cols]
+
+                # Shuffle the section values
+                random.shuffle(section_values)
+
+                # Assign the shuffled values back to the respective columns
+                for c, val in zip(cols, section_values):
+                    row[c] = val
 
     def shuffle_sections(self):
+        # Shuffle the order of the section rows
         sections = list(range(self.section_size))
         random.shuffle(sections)
         self.field = [self.field[y * self.section_size:(y + 1) * self.section_size] for y in sections]

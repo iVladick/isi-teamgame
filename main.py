@@ -6,9 +6,9 @@ from config import WIDTH, HEIGHT, WHITE
 
 def main():
     pygame.init()
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Sudoku")
-    screen.fill(WHITE)
+    # screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    # pygame.display.set_caption("Sudoku")
+    # screen.fill(WHITE)
 
     game = Game(FieldType.f9x9)
     # renderer = Renderer(screen, game)
