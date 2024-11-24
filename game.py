@@ -15,7 +15,7 @@ class FieldType(Enum):
     }
 
 class Game:
-    def __init__(self, field_type=FieldType.f9x9):
+    def __init__(self, callback_on_place, field_type=FieldType.f9x9):
         self.field_type = field_type.value
         self.size = self.field_type['size']
         self.section_size = self.field_type['section_size']
@@ -25,12 +25,10 @@ class Game:
         # self.shuffle_grid()  # Shuffle for randomness
         self.remove_numbers_from_grid()  # Remove numbers to create the puzzle
         self.field_start = copy.deepcopy(self.field)
+        self.callback_on_place = callback_on_place
 
     def _create_empty_field(self):
         return [[0 for _ in range(self.size)] for _ in range(self.size)]
-
-    def reset_field(self):
-        self.field = copy.deepcopy(self.field_start)
 
     def is_section_contains(self, x: int, y: int, num: int) -> bool:
         sec_x, sec_y = x // self.section_size, y // self.section_size
@@ -53,6 +51,8 @@ class Game:
 
     def place_number(self, x: int, y: int, num: int):
         self.field[y][x] = num
+
+        self.callback_on_place()
 
     # Backtracking to fill the grid completely
     def fill_grid_backtracking(self) -> bool:
@@ -232,3 +232,6 @@ class Game:
                 if self.field[idx_y][idx_x] == 0:
                     return idx_x, idx_y
         return None
+
+    def field_clear(self):
+        self.field = copy.deepcopy(self.field_start)

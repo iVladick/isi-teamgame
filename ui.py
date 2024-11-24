@@ -2,7 +2,12 @@ import tkinter as tk
 from tkinter import ttk
 import config
 from game import Game, FieldType
+from solver import Solver, SolverMode
+import time
 
+
+# TODO
+# https://pythonassets.com/posts/background-tasks-with-tk-tkinter/
 
 class SudokuUI:
     def __init__(self, root):
@@ -35,37 +40,61 @@ class SudokuUI:
         # Simulation Speed Dropdown
         speed_label = tk.Label(top_frame1, text="Speed:")
         speed_label.pack(side=tk.LEFT, padx=5)
-        speed_dropdown = ttk.Combobox(top_frame1, textvariable=self.speed_var, values=["Fast", "Medium", "Slow"],
-                                      state="readonly")
+        speed_dropdown = ttk.Combobox(
+            top_frame1,
+            textvariable=self.speed_var,
+            values=["Fast", "Medium", "Slow"],
+            state="readonly"
+        )
         speed_dropdown.pack(side=tk.LEFT, padx=5)
 
         # Solve Method Dropdown
         solve_method_label = tk.Label(top_frame1, text="Solve Method:")
         solve_method_label.pack(side=tk.LEFT, padx=5)
-        solve_method_dropdown = ttk.Combobox(top_frame1, textvariable=self.solve_method_var,
-                                             values=["DFS", "Backtracking", "Forward checking"], state="readonly")
+        solve_method_dropdown = ttk.Combobox(
+            top_frame1,
+            textvariable=self.solve_method_var,
+            values=["DFS", "Backtracking", "Forward checking"],
+            state="readonly"
+        )
         solve_method_dropdown.pack(side=tk.LEFT, padx=5)
 
         # Second row for field controls
         top_frame2 = tk.Frame(self.root)
         top_frame2.pack(side=tk.TOP, fill=tk.X)
 
+        # Field Size Dropdown
+        field_size_label = tk.Label(top_frame2, text="Field Size:")
+        field_size_label.pack(side=tk.LEFT, padx=5)
+        field_size_dropdown = ttk.Combobox(
+            top_frame2,
+            textvariable=self.field_size_var,
+            values=["9x9", "4x4"],
+            state="readonly"
+        )
+        field_size_dropdown.pack(side=tk.LEFT, padx=5)
+
         # Generate Field Button
         generate_button = tk.Button(top_frame2, text="Generate Field", command=self.generate_field)
         generate_button.pack(side=tk.LEFT, padx=5, pady=5)
 
-        # Field Size Dropdown
-        field_size_label = tk.Label(top_frame2, text="Field Size:")
-        field_size_label.pack(side=tk.LEFT, padx=5)
-        field_size_dropdown = ttk.Combobox(top_frame2, textvariable=self.field_size_var, values=["9x9", "4x4"],
-                                           state="readonly")
-        field_size_dropdown.pack(side=tk.LEFT, padx=5)
+        clear_button = tk.Button(top_frame2, text="Clear Field", command=self.clear_field)
+        clear_button.pack(side=tk.LEFT, padx=5, pady=5)
+
+    def clear_field(self):
+        if self.game:
+            self.game.field_clear()
+            self.update_grid()
+        else:
+            # Clear the grid visually if no game is initialized
+            for row_cells in self.cells:
+                for cell in row_cells:
+                    cell.config(text="")
 
     def create_game_field(self):
         # Frame for the game grid
         self.grid_frame = tk.Frame(self.root)
         self.grid_frame.pack()
-
         self.draw_grid()
 
     def draw_grid(self):
@@ -106,25 +135,40 @@ class SudokuUI:
     def generate_field(self):
         # Initialize the game
         field_type = FieldType.f9x9 if self.field_size_var.get() == "9x9" else FieldType.f4x4
-        self.game = Game(field_type=field_type)
+        self.game = Game(self.solve_tick, field_type=field_type)
         self.draw_grid()
         self.update_grid()
 
     def start_game(self):
         if not self.game:
             return
-        self.solve_puzzle()
 
-    def solve_puzzle(self):
-        # Placeholder for solving algorithm with visualization
-        # Currently solves instantly and updates the grid
-        self.game.solve_puzzle()
+        solve_mode = None
+
+        match self.solve_method_var.get():
+            case "DFS":
+                solve_mode = SolverMode.DFS
+            case "Backtracking":
+                solve_mode = SolverMode.BACKTRACKING
+            case "Forward checking":
+                solve_mode = SolverMode.FORWARD_CHECKING
+
+        solver = Solver(self.game, solve_mode)
+
+        solver.solve()
+
+    def solve_tick(self):
+        delay = self.get_delay(self.speed_var.get())
+        # self.root.after(delay, self.update_grid)
+        time.sleep(delay)
+
         self.update_grid()
+        self.root.update_idletasks()
 
     def stop_game(self):
         # Reset the game and clear the grid
         if self.game:
-            self.game.reset_field()
+            self.game.field_clear()
             self.update_grid()
         else:
             # Clear the grid
@@ -144,6 +188,14 @@ class SudokuUI:
                     cell.config(text=str(value))
                 else:
                     cell.config(text="")
+
+    def get_delay(self, speed):
+        if speed == "Fast":
+            return 0
+        elif speed == "Medium":
+            return .100
+        elif speed == "Slow":
+            return .500
 
 
 if __name__ == "__main__":

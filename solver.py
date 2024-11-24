@@ -10,7 +10,7 @@ class SolverMode(Enum):
 
 
 class Solver:
-    def __init__(self, game: Game, mode: SolverMode = SolverMode.DFS):
+    def __init__(self, game: Game, mode: SolverMode = SolverMode.BACKTRACKING):
         self.game = game
         self.mode = mode
 
@@ -19,9 +19,9 @@ class Solver:
             case SolverMode.DFS:
                 self._dfs()
             case SolverMode.BACKTRACKING:
-                self._backtraking()
+                self._backtracking()
             case SolverMode.FORWARD_CHECKING:
-                self._forward_cheking()
+                self._forward_checking()
 
     def _sub_dfs(self, number):
         game = self.game
@@ -54,7 +54,7 @@ class Solver:
 
         return False
 
-    def _backtraking(self):
+    def _backtracking(self):
         game = self.game
 
         pos = game.get_first_empty_cell()
@@ -68,12 +68,43 @@ class Solver:
             if game.is_place_valid(place_x, place_y, number):
                 game.place_number(place_x, place_y, number)
 
-                if self._backtraking():
+                if self._backtracking():
                     return True
 
                 game.place_number(place_x, place_y, 0)
 
         return False
 
-    def _forward_cheking(self):
-        pass
+    def _forward_checking(self):
+        game = self.game
+
+        pos = game.get_first_empty_cell()
+
+        if pos is None:
+            return True
+
+        place_x, place_y = pos
+
+        for number in range(1, game.size + 1):
+            if game.is_place_valid(place_x, place_y, number):
+                game.place_number(place_x, place_y, number)
+
+                forward_pos = game.get_first_empty_cell()
+
+                if forward_pos is None:
+                    return True
+
+                forward_place_x, forward_place_y = forward_pos
+
+                possible = False
+                for forward_number in range(1, game.size + 1):
+                    if game.is_place_valid(forward_place_x, forward_place_y, forward_number):
+                        possible = True
+                        break
+
+                if possible and self._forward_checking():
+                    return True
+
+                game.place_number(place_x, place_y, 0)
+
+        return False

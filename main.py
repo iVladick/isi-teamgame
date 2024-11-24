@@ -2,7 +2,7 @@
 from game import Game, FieldType
 from renderer import Renderer
 from config import WIDTH, HEIGHT, WHITE
-from sovler import Solver, SolverMode
+from solver import Solver, SolverMode
 
 
 def main():
