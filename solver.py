@@ -1,4 +1,5 @@
 from enum import Enum
+from tkinter.ttk import Treeview
 
 from game import Game
 
@@ -23,34 +24,31 @@ class Solver:
             case SolverMode.FORWARD_CHECKING:
                 self._forward_checking()
 
-    def _sub_dfs(self, number):
-        game = self.game
-
-        pos = game.get_first_empty_cell()
-
-        if pos is None:
-            return True
-
-        place_x, place_y = pos
-
-        if game.is_place_valid(place_x, place_y, number):
-            game.place_number(place_x, place_y, number)
-            return True
-
-        return False
-
     def _dfs(self):
         game = self.game
 
         pos = game.get_first_empty_cell()
 
         if pos is None:
-            return True
+            return game.is_field_valid()
 
         place_x, place_y = pos
 
         for number in range(1, game.size + 1):
-            pass
+            if game.is_place_valid(place_x, place_y, number):
+                game.place_number(place_x, place_y, number)
+
+                if self._dfs():
+                    return True
+
+                game.place_number(place_x, place_y, 0)
+
+        game.place_number(place_x, place_y, 1)
+
+        if self._dfs():
+            return True
+
+        game.place_number(place_x, place_y, 0)
 
         return False
 

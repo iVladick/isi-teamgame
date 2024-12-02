@@ -233,5 +233,18 @@ class Game:
                     return idx_x, idx_y
         return None
 
+    def is_field_valid(self):
+        for idx_y in range(0, self.size):
+            for idx_x in range(0, self.size):
+                num = self.field[idx_y][idx_x]
+                self.field[idx_y][idx_x] = 0
+
+                if self.is_place_valid(idx_x, idx_y, num):
+                    self.field[idx_y][idx_x] = num
+                else:
+                    self.field[idx_y][idx_x] = num
+                    return False
+        return True
+
     def field_clear(self):
         self.field = copy.deepcopy(self.field_start)
