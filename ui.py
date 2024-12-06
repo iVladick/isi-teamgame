@@ -26,19 +26,19 @@ class SudokuUI:
 
     def create_top_bar(self):
         # First row for simulation controls
-        top_frame1 = tk.Frame(self.root)
+        top_frame1 = tk.Frame(self.root, bg = '#FFE0B5')
         top_frame1.pack(side=tk.TOP, fill=tk.X)
 
         # Start Button
-        start_button = tk.Button(top_frame1, text="Start", command=self.start_game)
+        start_button = tk.Button(top_frame1, text="Start", command=self.start_game, bg='#D57149', fg='#FFF2D7')
         start_button.pack(side=tk.LEFT, padx=5, pady=5)
 
         # Stop Button
-        stop_button = tk.Button(top_frame1, text="Stop", command=self.stop_game)
+        stop_button = tk.Button(top_frame1, text="Stop", command=self.stop_game,bg='#D57149', fg='#FFF2D7')
         stop_button.pack(side=tk.LEFT, padx=5, pady=5)
 
         # Simulation Speed Dropdown
-        speed_label = tk.Label(top_frame1, text="Speed:")
+        speed_label = tk.Label(top_frame1, text="Speed:", bg='#DE8F5F', fg='#FFF2D7')
         speed_label.pack(side=tk.LEFT, padx=5)
         speed_dropdown = ttk.Combobox(
             top_frame1,
@@ -49,7 +49,7 @@ class SudokuUI:
         speed_dropdown.pack(side=tk.LEFT, padx=5)
 
         # Solve Method Dropdown
-        solve_method_label = tk.Label(top_frame1, text="Solve Method:")
+        solve_method_label = tk.Label(top_frame1, text="Solve Method:",bg='#DE8F5F', fg='#FFF2D7')
         solve_method_label.pack(side=tk.LEFT, padx=5)
         solve_method_dropdown = ttk.Combobox(
             top_frame1,
@@ -60,11 +60,11 @@ class SudokuUI:
         solve_method_dropdown.pack(side=tk.LEFT, padx=5)
 
         # Second row for field controls
-        top_frame2 = tk.Frame(self.root)
+        top_frame2 = tk.Frame(self.root, bg = '#FFE0B5')
         top_frame2.pack(side=tk.TOP, fill=tk.X)
 
         # Field Size Dropdown
-        field_size_label = tk.Label(top_frame2, text="Field Size:")
+        field_size_label = tk.Label(top_frame2, text="Field Size:",bg='#DE8F5F', fg='#FFF2D7')
         field_size_label.pack(side=tk.LEFT, padx=5)
         field_size_dropdown = ttk.Combobox(
             top_frame2,
@@ -75,10 +75,10 @@ class SudokuUI:
         field_size_dropdown.pack(side=tk.LEFT, padx=5)
 
         # Generate Field Button
-        generate_button = tk.Button(top_frame2, text="Generate Field", command=self.generate_field)
+        generate_button = tk.Button(top_frame2, text="Generate Field", command=self.generate_field,bg='#D57149', fg='#FFF2D7')
         generate_button.pack(side=tk.LEFT, padx=5, pady=5)
 
-        clear_button = tk.Button(top_frame2, text="Clear Field", command=self.clear_field)
+        clear_button = tk.Button(top_frame2, text="Clear Field", command=self.clear_field,bg='#D57149', fg='#FFF2D7')
         clear_button.pack(side=tk.LEFT, padx=5, pady=5)
 
     def clear_field(self):
@@ -123,7 +123,7 @@ class SudokuUI:
                 if (sector_row + sector_col) % 2 == 0:
                     bg_color = config.FIELD_SECTOR_COLOR
                 else:
-                    bg_color = config.WHITE
+                    bg_color = config.FIELD_SECTOR_COLOR2
                 cell.config(bg=bg_color)
                 row_cells.append(cell)
             self.cells.append(row_cells)

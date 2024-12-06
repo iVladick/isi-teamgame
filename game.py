@@ -236,6 +236,9 @@ class Game:
     def is_field_valid(self):
         for idx_y in range(0, self.size):
             for idx_x in range(0, self.size):
+                if self.field[idx_y][idx_x] == 0:
+                    continue
+
                 num = self.field[idx_y][idx_x]
                 self.field[idx_y][idx_x] = 0
 

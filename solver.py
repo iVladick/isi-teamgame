@@ -35,20 +35,23 @@ class Solver:
         place_x, place_y = pos
 
         for number in range(1, game.size + 1):
-            if game.is_place_valid(place_x, place_y, number):
-                game.place_number(place_x, place_y, number)
+            # if game.is_place_valid(place_x, place_y, number):
+            game.place_number(place_x, place_y, number)
 
-                if self._dfs():
-                    return True
+            if self._dfs():
+                return True
 
-                game.place_number(place_x, place_y, 0)
+            game.place_number(place_x, place_y, 0)
 
-        game.place_number(place_x, place_y, 1)
+            # if not game.is_field_valid():
+            #     return False
 
-        if self._dfs():
-            return True
-
-        game.place_number(place_x, place_y, 0)
+        # game.place_number(place_x, place_y, 1)
+        #
+        # if self._dfs():
+        #     return True
+        #
+        # game.place_number(place_x, place_y, 0)
 
         return False
 
