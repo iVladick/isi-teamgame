@@ -167,10 +167,6 @@ class SudokuUI:
             self.stop_event.set()
             self.solver_thread.join(timeout=.2)  # Wait for the thread to finish
 
-            self.clear_field()
-
-        self.clear_field()
-
     def update_grid(self):
         if not self.game:
             return
