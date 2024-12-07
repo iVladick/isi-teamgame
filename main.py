@@ -9,7 +9,10 @@ def main():
     root.configure(bg='#FFE0B5')
     app = SudokuUI(root)
 
-    root.mainloop()
+    try:
+        root.mainloop()
+    except:
+        pass
 
 
 if __name__ == "__main__":

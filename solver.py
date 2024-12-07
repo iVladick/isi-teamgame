@@ -1,19 +1,18 @@
 from enum import Enum
-from tkinter.ttk import Treeview
-
 from game import Game
-
+import time
 
 class SolverMode(Enum):
-    DFS = 0,
-    BACKTRACKING = 1,
+    DFS = 0
+    BACKTRACKING = 1
     FORWARD_CHECKING = 2
 
-
 class Solver:
-    def __init__(self, game: Game, mode: SolverMode = SolverMode.BACKTRACKING):
+    def __init__(self, game: Game, stop_event, get_delay_callable, mode: SolverMode = SolverMode.BACKTRACKING):
         self.game = game
         self.mode = mode
+        self.stop_event = stop_event
+        self.get_delay = get_delay_callable  # Callable to get current delay
 
     def solve(self):
         match self.mode:
@@ -25,8 +24,10 @@ class Solver:
                 self._forward_checking()
 
     def _dfs(self):
-        game = self.game
+        if self.stop_event.is_set():
+            return False
 
+        game = self.game
         pos = game.get_first_empty_cell()
 
         if pos is None:
@@ -35,29 +36,22 @@ class Solver:
         place_x, place_y = pos
 
         for number in range(1, game.size + 1):
-            # if game.is_place_valid(place_x, place_y, number):
+            if self.stop_event.is_set():
+                return False
             game.place_number(place_x, place_y, number)
-
+            time.sleep(self.get_delay())  # Delay based on speed_var
             if self._dfs():
                 return True
-
             game.place_number(place_x, place_y, 0)
-
-            # if not game.is_field_valid():
-            #     return False
-
-        # game.place_number(place_x, place_y, 1)
-        #
-        # if self._dfs():
-        #     return True
-        #
-        # game.place_number(place_x, place_y, 0)
+            time.sleep(self.get_delay())
 
         return False
 
     def _backtracking(self):
-        game = self.game
+        if self.stop_event.is_set():
+            return False
 
+        game = self.game
         pos = game.get_first_empty_cell()
 
         if pos is None:
@@ -66,19 +60,24 @@ class Solver:
         place_x, place_y = pos
 
         for number in range(1, game.size + 1):
+            if self.stop_event.is_set():
+                return False
+
             if game.is_place_valid(place_x, place_y, number):
                 game.place_number(place_x, place_y, number)
-
+                time.sleep(self.get_delay())  # Delay based on speed_var
                 if self._backtracking():
                     return True
-
                 game.place_number(place_x, place_y, 0)
+                time.sleep(self.get_delay())
 
         return False
 
     def _forward_checking(self):
-        game = self.game
+        if self.stop_event.is_set():
+            return False
 
+        game = self.game
         pos = game.get_first_empty_cell()
 
         if pos is None:
@@ -87,14 +86,15 @@ class Solver:
         place_x, place_y = pos
 
         for number in range(1, game.size + 1):
+            if self.stop_event.is_set():
+                return False
+
             if game.is_place_valid(place_x, place_y, number):
                 game.place_number(place_x, place_y, number)
-
+                time.sleep(self.get_delay())  # Delay based on speed_var
                 forward_pos = game.get_first_empty_cell()
-
                 if forward_pos is None:
                     return True
-
                 forward_place_x, forward_place_y = forward_pos
 
                 possible = False
@@ -107,5 +107,6 @@ class Solver:
                     return True
 
                 game.place_number(place_x, place_y, 0)
+                time.sleep(self.get_delay())
 
         return False
