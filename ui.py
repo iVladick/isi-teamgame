@@ -183,7 +183,7 @@ class SudokuUI:
     def get_delay(self):
         speed = self.speed_var.get()
         if speed == "Fast":
-            return 0.02  # 20 ms
+            return 0.01  # 20 ms
         elif speed == "Medium":
             return 0.2  # 200 ms
         elif speed == "Slow":
