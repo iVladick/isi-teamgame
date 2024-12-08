@@ -59,7 +59,7 @@ class Solver:
         pos = game.get_first_empty_cell()
 
         if pos is None:
-            return True
+            return game.is_field_valid()
 
         place_x, place_y = pos
 
@@ -72,80 +72,6 @@ class Solver:
 
             game.place_number(place_x, place_y, 0)
             time.sleep(self.get_delay())
-
-        return False
-
-    def _backtracking(self):
-        if self.stop_event.is_set():
-            return False
-
-        game = self.game
-        pos = game.get_first_empty_cell()
-
-        if pos is None:
-            return True
-
-        place_x, place_y = pos
-
-        for number in range(1, game.size + 1):
-            if self.stop_event.is_set():
-                return False
-
-            if game.is_place_valid(place_x, place_y, number):
-                game.place_number(place_x, place_y, number)
-
-                time.sleep(self.get_delay())
-
-                if self._backtracking():
-                    return True
-
-                if self.stop_event.is_set():
-                    return False
-
-                game.place_number(place_x, place_y, 0)
-                time.sleep(self.get_delay())
-
-        return False
-
-    def _forward_checking(self):
-        if self.stop_event.is_set():
-            return False
-
-        game = self.game
-        pos = game.get_first_empty_cell()
-
-        if pos is None:
-            return True
-
-        place_x, place_y = pos
-
-        for number in range(1, game.size + 1):
-            if self.stop_event.is_set():
-                return False
-
-            if game.is_place_valid(place_x, place_y, number):
-                game.place_number(place_x, place_y, number)
-                time.sleep(self.get_delay())
-                forward_pos = game.get_first_empty_cell()
-                if forward_pos is None:
-                    return True
-                if self.stop_event.is_set():
-                    return False
-                forward_place_x, forward_place_y = forward_pos
-
-                possible = False
-                for forward_number in range(1, game.size + 1):
-                    if game.is_place_valid(forward_place_x, forward_place_y, forward_number):
-                        possible = True
-                        break
-
-                if possible and self._forward_checking():
-                    return True
-                if self.stop_event.is_set():
-                    return False
-
-                game.place_number(place_x, place_y, 0)
-                time.sleep(self.get_delay())
 
         return False
 
