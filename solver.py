@@ -19,9 +19,9 @@ class Solver:
             case SolverMode.DFS:
                 self._dfs()
             case SolverMode.BACKTRACKING:
-                self._backtracking2()
+                self._backtracking()
             case SolverMode.FORWARD_CHECKING:
-                self._forward_checking2()
+                self._forward_checking()
 
     def _dfs(self):
         if self.stop_event.is_set():
@@ -47,7 +47,7 @@ class Solver:
 
         return False
 
-    def _backtracking2(self):
+    def _backtracking(self):
         if self.stop_event.is_set():
             return True
 
@@ -67,7 +67,7 @@ class Solver:
             game.place_number(place_x, place_y, number)
             time.sleep(self.get_delay())
 
-            if self._backtracking2():
+            if self._backtracking():
                 return True
 
             game.place_number(place_x, place_y, 0)
@@ -75,7 +75,7 @@ class Solver:
 
         return False
 
-    def _forward_checking2(self):
+    def _forward_checking(self):
         if self.stop_event.is_set():
             return True
 
@@ -92,7 +92,7 @@ class Solver:
                 game.place_number(place_x, place_y, number)
                 time.sleep(self.get_delay())
 
-                if self._forward_checking2():
+                if self._forward_checking():
                     return True
 
                 game.place_number(place_x, place_y, 0)
