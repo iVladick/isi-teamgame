@@ -1,9 +1,11 @@
 import tkinter as tk
 
 from ui import SudokuUI
-
+import random
 
 def main():
+
+    random.seed(100)
 
     root = tk.Tk()
     root.configure(bg='#FFE0B5')
