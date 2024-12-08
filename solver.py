@@ -19,13 +19,13 @@ class Solver:
             case SolverMode.DFS:
                 self._dfs()
             case SolverMode.BACKTRACKING:
-                self._backtracking()
+                self._backtracking2()
             case SolverMode.FORWARD_CHECKING:
-                self._forward_checking()
+                self._forward_checking2()
 
     def _dfs(self):
         if self.stop_event.is_set():
-            return False
+            return True
 
         game = self.game
         pos = game.get_first_empty_cell()
@@ -36,14 +36,40 @@ class Solver:
         place_x, place_y = pos
 
         for number in range(1, game.size + 1):
-            if self.stop_event.is_set():
-                return False
             game.place_number(place_x, place_y, number)
-            time.sleep(self.get_delay())  # Delay based on speed_var
+            time.sleep(self.get_delay())
+
             if self._dfs():
                 return True
-            if self.stop_event.is_set():
-                return False
+
+            game.place_number(place_x, place_y, 0)
+            time.sleep(self.get_delay())
+
+        return False
+
+    def _backtracking2(self):
+        if self.stop_event.is_set():
+            return True
+
+        game = self.game
+
+        if not game.is_field_valid():
+            return False
+
+        pos = game.get_first_empty_cell()
+
+        if pos is None:
+            return True
+
+        place_x, place_y = pos
+
+        for number in range(1, game.size + 1):
+            game.place_number(place_x, place_y, number)
+            time.sleep(self.get_delay())
+
+            if self._backtracking2():
+                return True
+
             game.place_number(place_x, place_y, 0)
             time.sleep(self.get_delay())
 
@@ -67,11 +93,15 @@ class Solver:
 
             if game.is_place_valid(place_x, place_y, number):
                 game.place_number(place_x, place_y, number)
-                time.sleep(self.get_delay())  # Delay based on speed_var
+
+                time.sleep(self.get_delay())
+
                 if self._backtracking():
                     return True
+
                 if self.stop_event.is_set():
                     return False
+
                 game.place_number(place_x, place_y, 0)
                 time.sleep(self.get_delay())
 
@@ -95,7 +125,7 @@ class Solver:
 
             if game.is_place_valid(place_x, place_y, number):
                 game.place_number(place_x, place_y, number)
-                time.sleep(self.get_delay())  # Delay based on speed_var
+                time.sleep(self.get_delay())
                 forward_pos = game.get_first_empty_cell()
                 if forward_pos is None:
                     return True
@@ -113,6 +143,31 @@ class Solver:
                     return True
                 if self.stop_event.is_set():
                     return False
+
+                game.place_number(place_x, place_y, 0)
+                time.sleep(self.get_delay())
+
+        return False
+
+    def _forward_checking2(self):
+        if self.stop_event.is_set():
+            return True
+
+        game = self.game
+        pos = game.get_first_empty_cell()
+
+        if pos is None:
+            return True
+
+        place_x, place_y = pos
+
+        for number in range(1, game.size + 1):
+            if game.is_place_valid(place_x, place_y, number):
+                game.place_number(place_x, place_y, number)
+                time.sleep(self.get_delay())
+
+                if self._forward_checking2():
+                    return True
 
                 game.place_number(place_x, place_y, 0)
                 time.sleep(self.get_delay())
