@@ -12,7 +12,7 @@ class Solver:
         self.game = game
         self.mode = mode
         self.stop_event = stop_event
-        self.get_delay = get_delay_callable  # Callable to get current delay
+        self.get_delay = get_delay_callable
 
     def solve(self):
         match self.mode:

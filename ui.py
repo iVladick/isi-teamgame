@@ -25,7 +25,6 @@ class SudokuUI:
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def create_top_bar(self):
-        # First Row: Solve Method and Steps Count
         first_row = tk.Frame(self.root, bg='#FFE0B5')
         first_row.pack(side=tk.TOP, fill=tk.X, pady=5)
 
@@ -44,7 +43,6 @@ class SudokuUI:
         place_counter_display = tk.Label(first_row, textvariable=self.place_counter_var, bg='#DE8F5F', fg='#FFF2D7')
         place_counter_display.pack(side=tk.LEFT, padx=5)
 
-        # Second Row: Field Size, Generate Field, Clear Field
         second_row = tk.Frame(self.root, bg='#FFE0B5')
         second_row.pack(side=tk.TOP, fill=tk.X, pady=5)
 
@@ -65,7 +63,6 @@ class SudokuUI:
         clear_button = tk.Button(second_row, text="Clear Field", command=self.clear_field, bg='#D57149', fg='#FFF2D7')
         clear_button.pack(side=tk.LEFT, padx=5, pady=5)
 
-        # Third Row: Start, Stop, Speed
         third_row = tk.Frame(self.root, bg='#FFE0B5')
         third_row.pack(side=tk.TOP, fill=tk.X, pady=5)
 
@@ -161,7 +158,6 @@ class SudokuUI:
         self.root.after(0, lambda: self.update_steps())
 
     def on_place(self):
-        # Schedule UI update in the main thread
         self.root.after(0, self.update_grid)
         self.root.after(0, lambda: self.update_steps())
 
@@ -171,7 +167,7 @@ class SudokuUI:
     def stop_game(self):
         if self.solver_thread and self.solver_thread.is_alive():
             self.stop_event.set()
-            self.solver_thread.join(timeout=.2)  # Wait for the thread to finish
+            self.solver_thread.join(timeout=.2)
 
     def update_grid(self):
         if not self.game:
