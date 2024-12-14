@@ -14,7 +14,7 @@ class SudokuUI:
         self.field_size_var = tk.StringVar(value="9x9")
         self.speed_var = tk.StringVar(value="Medium")
         self.solve_method_var = tk.StringVar(value="Backtracking")
-        self.place_counter_var = tk.IntVar(value=0)
+        self.place_counter_var = tk.StringVar(value="0")
         self.game = None
         self.cells = []
         self.solver_thread = None
@@ -88,7 +88,7 @@ class SudokuUI:
     def clear_field(self):
         if self.game:
             self.game.field_clear()
-            self.place_counter_var.set(self.game.place_counter)
+            self.update_steps()
             self.update_grid()
         else:
             for row_cells in self.cells:
@@ -130,7 +130,7 @@ class SudokuUI:
     def generate_field(self):
         field_type = FieldType.f9x9 if self.field_size_var.get() == "9x9" else FieldType.f4x4
         self.game = Game(self.on_place, field_type=field_type)
-        self.place_counter_var.set(self.game.place_counter)
+        self.update_steps()
         self.draw_grid()
         self.update_grid()
 
@@ -157,10 +157,16 @@ class SudokuUI:
         solver = Solver(self.game, self.stop_event, self.get_delay, mode=solve_mode)
         solver.solve()
 
+        self.root.after(0, self.update_grid)
+        self.root.after(0, lambda: self.update_steps())
+
     def on_place(self):
         # Schedule UI update in the main thread
         self.root.after(0, self.update_grid)
-        self.root.after(0, lambda: self.place_counter_var.set(self.game.place_counter))
+        self.root.after(0, lambda: self.update_steps())
+
+    def update_steps(self):
+        self.place_counter_var.set(f'{self.game.place_counter:,}')
 
     def stop_game(self):
         if self.solver_thread and self.solver_thread.is_alive():
